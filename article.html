@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>文章</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system}
+body{max-width:740px;margin:2rem auto;padding:0 1rem;line-height:1.75}
+.back{margin-bottom:1.5rem}
+/* 红底醒目返回按钮样式 */
+.back a{
+  display:inline-block;
+  background:#dc2626;
+  color:#fff;
+  font-size:22px;
+  font-weight:bold;
+  padding:12px 30px;
+  border-radius:8px;
+  text-decoration:none;
+  box-shadow:0 3px 10px rgba(220,38,38,0.25);
+}
+.back a:hover{
+  background:#b91c1c;
+}
+h1{margin-bottom:0.8rem}
+.meta-info{color:#666;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid #eee}
+#md-content h2{margin:1.4rem 0 0.6rem}
+#md-content h3{margin:1.2rem 0 0.5rem}
+#md-content p{margin-bottom:1rem}
+#md-content pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto}
+#md-content code{background:#efefef;padding:0 4px;border-radius:3px}
+.loading{text-align:center;color:#888;padding:3rem 0}
+</style>
+</head>
+<body>
+<div class="back"><a href="https://baidu.com/">← 点击进入</a></div>
+<div id="wrap" class="loading">加载文章…</div>
+
+<script>
+// =========改成你自己的信息=========
+const GITHUB_USER = "isawasb16";
+const GITHUB_REPO = "isawasb16.github.io";
+const POSTS_DIR = "posts/";
+// =================================
+
+function parseFrontmatter(md) {
+  const fmReg = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
+  const match = md.match(fmReg);
+  if(!match) return {meta:{},content:md};
+  const fmText = match[1];
+  const content = match[2];
+  const meta = {};
+  fmText.split(/\r?\n/).forEach(line=>{
+    const kv = line.split(":");
+    if(kv.length>=2){
+      const k = kv[0].trim();
+      const v = kv.slice(1).join(":").trim();
+      if(k==="tags") meta.tags = v.split(",").map(t=>t.trim());
+      else meta[k]=v;
+    }
+  })
+  return {meta,content};
+}
+
+(async ()=>{
+  const wrapDom = document.getElementById("wrap");
+  const params = new URLSearchParams(location.search);
+  const filename = params.get("file");
+  if(!filename){
+    wrapDom.innerText="缺少文章参数";
+    return;
+  }
+  try{
+    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${POSTS_DIR}${filename}`;
+    const res = await fetch(rawUrl);
+    const mdAll = await res.text();
+    const {meta,content} = parseFrontmatter(mdAll);
+    const html = marked.parse(content);
+    const tagsHtml = (meta.tags||[]).map(t=>`<span>${t}</span>`).join(" ");
+    wrapDom.className="";
+    wrapDom.innerHTML=`
+      <h1>${meta.title||filename.replace(/\.md$/,"")}</h1>
+      <div class="meta-info">
+        ${meta.date?`日期：${meta.date}`:""} ${tagsHtml}
+      </div>
+      <div id="md-content">${html}</div>
+    `;
+  }catch(err){
+    wrapDom.innerText="读取文章失败："+err.message;
+  }
+})();
+</script>
+</body>
+</html>
