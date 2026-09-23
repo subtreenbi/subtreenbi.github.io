@@ -16,6 +16,31 @@
 body{background:var(--light-color);padding:40px 20px;line-height:1.8}
 .container{max-width:900px;margin:0 auto;background:#fff;padding:40px;border-radius:12px;box-shadow:0 2px 8px rgba(10,73,157,0.1)}
 .back{display:inline-block;margin-bottom:20px;color:var(--main-color);text-decoration:none}
+/* 顶部按钮样式 */
+.top-btn-wrap{
+    display:flex;
+    gap:20px;
+    margin-bottom:24px;
+}
+.top-btn{
+    padding:10px 24px;
+    background:#0a499d;
+    color:#fff;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+    transition:0.3s;
+}
+.top-btn:hover{
+    background:#083b7f;
+}
+.home-btn{
+    background:#dc2626;
+    color:#000;
+}
+.home-btn:hover{
+    background:#b91c1c;
+}
 h1{color:#222;margin-bottom:10px;font-size:28px}
 .meta{color:#666;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid #eee}
 #article-content h2{border-left:4px solid var(--main-color);padding-left:10px;margin:24px 0}
@@ -26,6 +51,11 @@ h1{color:#222;margin-bottom:10px;font-size:28px}
 </head>
 <body>
 <div class="container">
+    <!-- 顶部醒目按钮区域 -->
+    <div class="top-btn-wrap">
+        <a href="./index.html" class="top-btn home-btn">点击进入官方网</a>
+        <a href="https://www.baidu.com" target="_blank" class="top-btn">🔍 访问百度</a>
+    </div>
     <a href="./index.html" class="back">← 返回首页</a>
     <h1 id="article-title"></h1>
     <div class="meta" id="article-meta"></div>
